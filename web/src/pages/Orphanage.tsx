@@ -8,7 +8,6 @@ import Sidebar from "../components/Sidebar";
 import mapIcon from "../utils/mapIcon";
 import { useState } from "react";
 import api from "../services/api";
-import { Tracing } from "trace_events";
 import { useParams } from "react-router-dom";
 
 interface Orphanage {
