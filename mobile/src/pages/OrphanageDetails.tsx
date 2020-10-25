@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Image, View, ScrollView, Text, StyleSheet, Dimensions } from 'react-native';
+import { Image, View, ScrollView, Text, StyleSheet, Dimensions, Linking } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { Feather, FontAwesome } from '@expo/vector-icons';
 
 import mapMarkerImg from '../images/map-marker.png';
-import { RectButton } from 'react-native-gesture-handler';
+import { RectButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { useRoute } from '@react-navigation/native';
 import api from '../services/api';
 
@@ -35,7 +35,7 @@ export default function OrphanageDetails() {
   const route = useRoute();
   const { id } = route.params as OrphanageDetailsRouteParams;
   useEffect(()=> {
-    api.get(`orphanage/${id}`).then( (response) => {
+    api.get(`orphanages/${id}`).then( (response) => {
       setOrphanage(response.data);
     });
   }, [id]);
@@ -46,6 +46,10 @@ export default function OrphanageDetails() {
         <Text style={styles.description}>Carregando...</Text>
       </View>
     );
+  }
+
+  function handleOpenGoogleMapRoutes(){
+    Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${orphanage?.latitude},${orphanage?.longitude}`);
   }
 
   return (
@@ -87,9 +91,9 @@ export default function OrphanageDetails() {
             />
           </MapView>
 
-          <View style={styles.routesContainer}>
+          <TouchableOpacity onPress={handleOpenGoogleMapRoutes} style={styles.routesContainer}>
             <Text style={styles.routesText}>Ver rotas no Google Maps</Text>
-          </View>
+          </TouchableOpacity>
         </View>
       
         <View style={styles.separator} />
@@ -104,15 +108,15 @@ export default function OrphanageDetails() {
           </View>
 
           {orphanage.open_on_weekends ? 
-            <View style={[styles.scheduleItem, styles.scheduleItemGreen]}>
+            (<View style={[styles.scheduleItem, styles.scheduleItemGreen]}>
               <Feather name="info" size={40} color="#39CC83" />
               <Text style={[styles.scheduleText, styles.scheduleTextGreen]}>Atendemos fim de semana</Text>
-            </View>
+            </View>)
              :
-            <View style={[styles.scheduleItem, styles.scheduleItemGreen]}>
+            (<View style={[styles.scheduleItem, styles.scheduleItemRed]}>
              <Feather name="info" size={40} color="#FF669D" />
-             <Text style={[styles.scheduleText, styles.scheduleTextGreen]}>Não atendemos fim de semana</Text>
-            </View>
+             <Text style={[styles.scheduleText, styles.scheduleTextRed]}>Não atendemos fim de semana</Text>
+            </View>)
           }
           
         </View>
